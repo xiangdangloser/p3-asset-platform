@@ -41,14 +41,13 @@ p3-asset-platform/
 
 ## 🚀 快速开始
 
-### 1. 编译与运行
+### 1. 容器化部署（推荐：使用 Docker 一键启动）
 ```bash
 git clone https://github.com/xiangdangloser/p3-asset-platform.git
 cd p3-asset-platform
-go mod tidy
-go run main.go
+docker-compose up -d --build
 
-服务默认监听 http://127.0.0.1:8080。首次启动会自动创建 assets.db 数据库并完成建表。
+服务将自动构建镜像并启动，访问 http://127.0.0.1:8080。数据库文件（assets.db）会自动挂载在本地 data/ 目录下，容器重启数据也不会丢失。
 
 2. 数据库重置（开发环境专用）
 如果你在开发过程中修改了 models 里的结构体字段（如修改了类型或删除了字段），GORM 的自动迁移可能无法平滑更新表结构。此时只需：
@@ -86,12 +85,13 @@ GET	/api/v1/assets	获取已扫描的资产列表	✅ Bearer Token
 
 SQLite 数据库适合单机低并发场景，若需集群化部署，需要更换为 PostgreSQL 或 MySQL。
 
-🗺️ 未来规划（Roadmap）
-□ P2 深度联动：将本地引擎规则转换为 Nuclei 模板并提交 PR，反向增加识别规则。
-□ 容器化部署：提供 Dockerfile 与 docker-compose.yml，实现一键在 Linux 服务器启动。
-□ 前端可视化：开发基于 Vue3 + Element Plus 的简单管理界面，展示扫描进度与资产列表。
-□ 主动指纹识别：引入 favicon.ico 哈希匹配、主动路径探测等增强识别准确率。
-□ CI/CD：配置 GitHub Actions 实现自动化编译与测试。
+```markdown
+## 🗺️ 未来规划（Roadmap）
+- [x] **容器化部署**：提供 `Dockerfile` 与 `docker-compose.yml`，实现一键在 Linux 服务器启动。（已完成）
+- [ ] **P2 深度联动**：将本地引擎规则转换为 Nuclei 模板并提交 PR，反向增加识别规则。
+- [ ] **前端可视化**：开发基于 Vue3 + Element Plus 的简单管理界面，展示扫描进度与资产列表。
+- [ ] **主动指纹识别**：引入 favicon.ico 哈希匹配、主动路径探测等增强识别准确率。
+- [ ] **CI/CD**：配置 GitHub Actions 实现自动化编译与测试。
 ⚠️ 法律声明与免责条款
 合法授权：本工具仅供网络安全学习、授权渗透测试及企业自有资产测绘使用。
 
