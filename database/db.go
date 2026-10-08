@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"os"
 
 	"github.com/glebarez/sqlite"
 	"github.com/xiangdangloser/p3-asset-platform/models"
@@ -13,9 +14,14 @@ var DB *gorm.DB
 
 // InitDB 初始化数据库连接并自动建表
 func InitDB() {
+	// 1. 动态获取数据库路径
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "assets.db" // 默认本地开发路径
+	}
+
 	var err error
-	// 连接 SQLite 数据库，如果不存在会自动创建 assets.db 文件
-	DB, err = gorm.Open(sqlite.Open("assets.db"), &gorm.Config{})
+	DB, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("数据库连接失败: %v", err)
 	}

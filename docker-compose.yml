@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  asset-platform:
+    build: .
+    container_name: p3-asset-platform
+    ports:
+      - "8080:8080"
+    volumes:
+      # ⚠️ 核心配置：把容器里的数据库文件挂载到宿主机
+      # 这样即使容器被删除或重启，数据库 assets.db 依然保留在本地
+      - ./data:/app/data
+    environment:
+      # 告诉程序把数据存到 /app/data 目录下
+      - DB_PATH=/app/data/assets.db
+    restart: always
