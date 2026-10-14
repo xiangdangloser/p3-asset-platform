@@ -31,6 +31,11 @@ WORKDIR /app
 # 只把编译好的二进制文件从 Builder 阶段拷过来
 COPY --from=builder /app/p3-asset-platform .
 
+
+# ⭐ 新增：把模板和静态文件也拷贝过来
+COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/static ./static
+
 # 暴露 8080 端口
 EXPOSE 8080
 

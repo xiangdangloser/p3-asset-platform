@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 - P3 资产监控平台</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-bold mb-6 text-center text-blue-400">资产扫描与监控平台</h2>
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">用户名</label>
+            <input type="text" id="username" class="w-full bg-gray-700 border border-gray-600 rounded p-2 focus:outline-none focus:border-blue-500" value="admin">
+        </div>
+        <div class="mb-6">
+            <label class="block text-sm font-medium mb-1">密码</label>
+            <input type="password" id="password" class="w-full bg-gray-700 border border-gray-600 rounded p-2 focus:outline-none focus:border-blue-500" value="123456">
+        </div>
+        <button onclick="login()" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition duration-200">登 录</button>
+    </div>
+    <!-- 引入外部 JS -->
+    <script src="/static/js/login.js"></script>
+</body>
+</html>

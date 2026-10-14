@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>扫描控制台</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- 顶部导航 -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-400">资产扫描控制台</h1>
+            <button onclick="logout()" class="text-gray-400 hover:text-white transition">退出登录</button>
+        </div>
+
+        <!-- 扫描输入区 -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+            <label class="block mb-2 font-medium">输入目标 (每行一个URL)</label>
+            <textarea id="targets" rows="4" class="w-full bg-gray-700 rounded p-3 mb-4 focus:outline-none focus:border-blue-500 font-mono text-sm" placeholder="https://www.baidu.com&#10;https://www.taobao.com"></textarea>
+            <div class="flex items-center gap-4">
+                <button onclick="startScan()" id="scanBtn" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded font-bold transition disabled:opacity-50">开始扫描</button>
+                <div id="taskInfo" class="text-sm text-yellow-400 font-medium"></div>
+            </div>
+        </div>
+
+        <!-- 结果表格 -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold mb-4">扫描结果</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-gray-700 text-gray-400">
+                            <th class="pb-2">目标</th>
+                            <th class="pb-2">状态码</th>
+                            <th class="pb-2">Server</th>
+                            <th class="pb-2">标题</th>
+                            <th class="pb-2">指纹</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultTable">
+                        <tr><td colspan="5" class="py-4 text-center text-gray-500">暂无数据</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
