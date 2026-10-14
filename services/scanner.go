@@ -84,7 +84,7 @@ var FingerprintRules = []Fingerprint{
 	},
 	{
 		Name:     "Jenkins",
-		Headers:  []string{"X-Jenkins"},
+		Headers:  []string{"X-Jenkins:"}, // 注意冒号不能省： SplitN 按冒号切分，缺冒号整条规则会被跳过（修复前 Jenkins 从未生效）
 		BodyKeys: []string{"<title>Dashboard [Jenkins]</title>"},
 	},
 	{
@@ -147,42 +147,59 @@ var FingerprintRules = []Fingerprint{
 }
 
 // identifyFingerprint 接收响应数据，返回匹配到的指纹名称列表
+// 匹配策略：任意一条 Header 规则命中，或任意一条 Body 关键词命中，即判定为该指纹
 func identifyFingerprint(headers map[string][]string, body string) []string {
 	var matches []string
+
+	// 预处理：body 统一转小写，避免每条规则、每个关键词重复转换
+	lowerBody := strings.ToLower(body)
+
 	for _, rule := range FingerprintRules {
 		isMatched := false
 
-		//1. 匹配 Header
+		//1. 匹配 Header（任一 Header 规则命中即可）
 		for _, headerRule := range rule.Headers {
 			parts := strings.SplitN(headerRule, ":", 2)
-			if len(parts) == 2 {
-				headerKey := strings.TrimSpace(parts[0])
-				headerVal := strings.TrimSpace(parts[1])
-				// 遍历响应的 headers 看是否包含规则里的值
-				for respKey, respVals := range headers {
-					if strings.EqualFold(respKey, headerKey) {
-						for _, val := range respVals {
-							if strings.Contains(strings.ToLower(val), strings.ToLower(headerVal)) {
-								isMatched = true
-								break
-							}
-						}
-					}
+			if len(parts) != 2 {
+				continue // 规则格式不含冒号，跳过该条
+			}
+			headerKey := strings.TrimSpace(parts[0])
+			headerVal := strings.ToLower(strings.TrimSpace(parts[1]))
+			// 遍历响应的 headers 看是否包含规则里的值
+			for respKey, respVals := range headers {
+				if !strings.EqualFold(respKey, headerKey) {
+					continue
 				}
-
-				// 2. 匹配 Body（如果 Header 没匹配到）
-				if !isMatched {
-					for _, keyword := range rule.BodyKeys {
-						if strings.Contains(strings.ToLower(body), strings.ToLower(keyword)) {
-							isMatched = true
-							break
-						}
+				for _, val := range respVals {
+					if strings.Contains(strings.ToLower(val), headerVal) {
+						isMatched = true
+						break
 					}
 				}
 				if isMatched {
-					matches = append(matches, rule.Name)
+					break
 				}
 			}
+			if isMatched {
+				break
+			}
+		}
+
+		// 2. Header 未命中时，再匹配 Body 关键词（任一命中即可）
+		// ⚠️ 历史 Bug：这段代码曾经写在上面 Header 循环的内部，
+		// 导致 Headers 为空的规则（RuoYi、致远OA、泛微、Nacos、WordPress 等 14 条）
+		// 的 BodyKeys 永远不会被匹配，指纹引擎半数规则失效。已修复，勿改回去。
+		if !isMatched {
+			for _, keyword := range rule.BodyKeys {
+				if strings.Contains(lowerBody, strings.ToLower(keyword)) {
+					isMatched = true
+					break
+				}
+			}
+		}
+
+		if isMatched {
+			matches = append(matches, rule.Name)
 		}
 	}
 	return matches

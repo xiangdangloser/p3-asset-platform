@@ -1,3 +1,6 @@
 *.db
 *.exe
 data/
+
+优化方案.md
+.workbuddy/
