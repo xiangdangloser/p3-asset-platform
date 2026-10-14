@@ -1,16 +1,43 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: p3-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: asset_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: p3-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+
   asset-platform:
     build: .
     container_name: p3-asset-platform
     ports:
       - "8080:8080"
-    volumes:
-      # ⚠️ 核心配置：把容器里的数据库文件挂载到宿主机
-      # 这样即使容器被删除或重启，数据库 assets.db 依然保留在本地
-      - ./data:/app/data
     environment:
-      # 告诉程序把数据存到 /app/data 目录下
-      - DB_PATH=/app/data/assets.db
+      - DB_TYPE=mysql
+      - DB_DSN=user:userpassword@tcp(mysql:3306)/asset_db?charset=utf8mb4&parseTime=True&loc=Local
+      - REDIS_ADDR=redis:6379
+    depends_on:
+      mysql:
+        condition: service_healthy # 必须等 MySQL 彻底启动并健康后再启动后端
     restart: always

@@ -1,0 +1,19 @@
+# 忽略本地数据卷（最重要的！）
+data/
+
+# 忽略本地编译产物
+*.exe
+p3-asset-platform
+
+# 忽略本地数据库文件
+*.db
+
+# 忽略 Git 和编辑器配置
+.git
+.gitignore
+.vscode
+.idea
+
+# 忽略文档
+README.md
+LICENSE
