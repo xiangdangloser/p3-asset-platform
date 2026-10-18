@@ -30,6 +30,14 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		// ⭐ 新增：提取 user_id 并存入上下文
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			// JWT 里的数字默认是 float64，需要转成 uint
+			if userIDFloat, ok := claims["user_id"].(float64); ok {
+				c.Set("user_id", uint(userIDFloat))
+			}
+		}
+
 		c.Next() // 放行
 
 	}

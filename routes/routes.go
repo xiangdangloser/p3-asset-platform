@@ -26,6 +26,11 @@ func SetupRouter() *gin.Engine {
 		c.HTML(http.StatusOK, "login.html", nil)
 	})
 
+	// ⭐ 新增：渲染注册页
+	r.GET("/register", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "register.html", nil)
+	})
+
 	// 新增：Dashboard 页面（前端可以自己检查 Token，后端只负责返回 HTML）
 	r.GET("/dashboard", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "dashboard.html", nil)

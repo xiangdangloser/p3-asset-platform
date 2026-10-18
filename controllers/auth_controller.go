@@ -26,6 +26,11 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "参数错误"})
 		return
 	}
+
+	if len(req.Username) < 3 || len(req.Password) < 6 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名至少3位，密码至少6位"})
+		return
+	}
 	// 密码加密
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 

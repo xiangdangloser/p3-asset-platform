@@ -11,9 +11,13 @@ import (
 
 // GetAssets 获取所有资产列表
 func GetAssets(c *gin.Context) {
+	// ⭐ 获取当前用户 ID
+	userID := c.GetUint("user_id")
+
 	var assets []models.Asset
-	// 从数据库查询所有资产
-	database.DB.Find(&assets)
+	// ⭐ 过滤查询
+	database.DB.Where("user_id = ?", userID).Find(&assets)
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"data": assets,

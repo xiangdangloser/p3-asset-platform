@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,13 +23,19 @@ func ScanTargets(c *gin.Context) {
 		return
 	}
 
+	// ⭐ 获取当前用户 ID
+	userID := c.GetUint("user_id")
+
+	log.Printf("调试: 当前用户ID为 %d", userID) // ⭐ 加一行日志，立刻看出是不是 0
+
 	// 1. 创建数据库任务记录（状态为 pending）
-	task := models.Task{Status: "pending", Total: len(req.Targets)}
+	task := models.Task{Status: "pending", Total: len(req.Targets), UserID: userID}
 	database.DB.Create(&task)
 
 	// 2. 封装任务数据
 	payload := services.ScanTaskPayload{
 		TaskID:  task.ID,
+		UserID:  userID,
 		Targets: req.Targets,
 	}
 	payloadBytes, _ := json.Marshal(payload)
@@ -43,5 +50,6 @@ func ScanTargets(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "任务已入队，等待后台执行",
 		"task_id": task.ID,
+		"user_id": userID,
 	})
 }
